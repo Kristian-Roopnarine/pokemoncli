@@ -1,9 +1,11 @@
 package main
 
 import (
-	"github.com/Kristian-Roopnarine/pokemoncli/pokeapi"
+	pokeapi "github.com/Kristian-Roopnarine/pokemoncli/pokeapi"
 )
 
 func main() {
-	startRepl()
+
+	pokeapi.HelloWorld()
+	//startRepl()
 }
