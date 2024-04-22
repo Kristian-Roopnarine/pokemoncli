@@ -3,18 +3,25 @@ package main
 import (
 	"bufio"
 	"fmt"
+	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
 	"os"
 	"strings"
+	"time"
 )
 
 type Config struct {
 	Next     string
 	Previous *string
+	Cache    pokecache.Cache
 }
 
 func startRepl() {
 	reader := bufio.NewScanner(os.Stdin)
-	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location", Previous: nil}
+	cache, err := pokecache.NewCache(5 * time.Minute)
+	if err != nil {
+		panic("Error creating Cache")
+	}
+	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location", Previous: nil, Cache: cache}
 	for {
 		fmt.Print("Pokedex > ")
 		reader.Scan()
