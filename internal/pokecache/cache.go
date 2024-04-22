@@ -20,11 +20,13 @@ type Cache struct {
 // should this return the pointer to the new item?
 func NewCache(interval time.Duration) (Cache, error) {
 	cache := Cache{Data: make(map[string]cacheEntry), interval: interval, mu: &sync.RWMutex{}}
-	go cache.reapLoop()
+	go cache.reapLoop(interval)
 	return cache, nil
 }
 
 func (c Cache) Add(key string, val []byte) error {
+	c.mu.Lock()
+	defer c.mu.Unlock()
 	c.Data[key] = cacheEntry{
 		CreatedAt: time.Now(),
 		Val:       val,
@@ -43,22 +45,19 @@ func (c Cache) Get(key string) ([]byte, bool, error) {
 	return nil, false, nil
 }
 
-func (c Cache) reapLoop() error {
-	ticker := time.NewTicker(c.interval)
-	defer ticker.Stop()
-	for {
-		select {
-		case t := <-ticker.C:
-			for key, value := range c.Data {
-				if (t.Sub(value.CreatedAt)) >= c.interval {
-					c.mu.Lock()
-					delete(c.Data, key)
-					c.mu.Unlock()
-				}
+func (c Cache) reapLoop(interval time.Duration) {
+	ticker := time.NewTicker(interval)
+	for range ticker.C {
+		c.reap(time.Now().UTC(), interval)
+	}
+}
 
-			}
-		default:
-			fmt.Println("Checking cache")
+func (c Cache) reap(now time.Time, last time.Duration) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	for k, v := range c.Data {
+		if v.CreatedAt.Before(now.Add(-last)) {
+			delete(c.Data, k)
 		}
 	}
 }

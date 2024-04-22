@@ -3,6 +3,7 @@ package pokeapi
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
 	"io"
 	"net/http"
@@ -22,6 +23,7 @@ type PokeApiResponse struct {
 
 func Get(url string, cache pokecache.Cache) (PokeApiResponse, error) {
 	if cacheEntry, ok := cache.Data[url]; ok {
+		fmt.Println("Getting from cache")
 		pokeResponse := PokeApiResponse{}
 		err := json.Unmarshal(cacheEntry.Val, &pokeResponse)
 		if err != nil {
