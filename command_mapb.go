@@ -10,7 +10,6 @@ func commandMapb(config *Config) error {
 	if config.Previous == nil {
 		return errors.New("No Previous locations to show.")
 	}
-	config.Next = *config.Previous
 	resp, err := pokeapi.Get(*config.Previous)
 	if err != nil {
 		return err
@@ -18,6 +17,7 @@ func commandMapb(config *Config) error {
 	for _, location := range resp.Results {
 		fmt.Println(location.Name)
 	}
+	config.Next = resp.Next
 	config.Previous = resp.Previous
 	return nil
 
