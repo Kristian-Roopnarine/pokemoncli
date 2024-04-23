@@ -1,7 +1,6 @@
 package pokedex
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/Kristian-Roopnarine/pokemoncli/internal/pokeapi"
@@ -28,7 +27,6 @@ func (p Pokedex) Get(name string) (pokeapi.PokemonResponse, bool) {
 	defer p.mu.RUnlock()
 	poke, ok := p.CaughtPokemon[name]
 	if !ok {
-		fmt.Printf("you have not caught %v\n", name)
 		return pokeapi.PokemonResponse{}, false
 	}
 	return poke, ok
