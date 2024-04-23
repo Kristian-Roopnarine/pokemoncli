@@ -16,12 +16,14 @@ type Config struct {
 }
 
 func startRepl() {
+	var commandName string
+	var argument string
 	reader := bufio.NewScanner(os.Stdin)
 	cache, err := pokecache.NewCache(5 * time.Minute)
 	if err != nil {
 		panic("Error creating Cache")
 	}
-	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location", Previous: nil, Cache: cache}
+	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location-area", Previous: nil, Cache: cache}
 	for {
 		fmt.Print("Pokedex > ")
 		reader.Scan()
@@ -31,11 +33,14 @@ func startRepl() {
 			continue
 		}
 
-		commandName := words[0]
+		commandName = words[0]
+		if len(words) > 1 {
+			argument = words[1]
+		}
 
 		command, exists := getCommands()[commandName]
 		if exists {
-			err := command.callback(&locationConfig)
+			err := command.callback(&locationConfig, argument)
 			if err != nil {
 				fmt.Println(err)
 			}
@@ -55,7 +60,7 @@ func cleanInput(text string) []string {
 type cliCommand struct {
 	name        string
 	description string
-	callback    func(c *Config) error
+	callback    func(c *Config, arg string) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -79,6 +84,11 @@ func getCommands() map[string]cliCommand {
 			name:        "mapb",
 			description: "Get list of previous locations",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "Get list of pokemon in location",
+			callback:    commandExplore,
 		},
 	}
 }

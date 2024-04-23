@@ -6,8 +6,8 @@ import (
 	pokeapi "github.com/Kristian-Roopnarine/pokemoncli/internal/pokeapi"
 )
 
-func commandMap(config *Config) error {
-	resp, err := pokeapi.Get(config.Next, config.Cache)
+func commandMap(config *Config, arg string) error {
+	resp, err := pokeapi.Get[pokeapi.LocationResponse](config.Next, config.Cache)
 	for _, location := range resp.Results {
 		fmt.Println(location.Name)
 	}
@@ -16,11 +16,11 @@ func commandMap(config *Config) error {
 	return err
 }
 
-func commandMapb(config *Config) error {
+func commandMapb(config *Config, arg string) error {
 	if config.Previous == nil {
 		return errors.New("No Previous locations to show.")
 	}
-	resp, err := pokeapi.Get(*config.Previous, config.Cache)
+	resp, err := pokeapi.Get[pokeapi.LocationResponse](*config.Previous, config.Cache)
 	if err != nil {
 		return err
 	}
