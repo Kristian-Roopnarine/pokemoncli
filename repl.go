@@ -3,16 +3,19 @@ package main
 import (
 	"bufio"
 	"fmt"
-	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
 	"os"
 	"strings"
 	"time"
+
+	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
+	pokedex "github.com/Kristian-Roopnarine/pokemoncli/internal/pokedex"
 )
 
 type Config struct {
 	Next     string
 	Previous *string
 	Cache    pokecache.Cache
+	Pokedex  pokedex.Pokedex
 }
 
 func startRepl() {
@@ -23,7 +26,8 @@ func startRepl() {
 	if err != nil {
 		panic("Error creating Cache")
 	}
-	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location-area", Previous: nil, Cache: cache}
+	pokedex := pokedex.NewPokedex()
+	locationConfig := Config{Next: "https://pokeapi.co/api/v2/location-area", Previous: nil, Cache: cache, Pokedex: pokedex}
 	for {
 		fmt.Print("Pokedex > ")
 		reader.Scan()
@@ -89,6 +93,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "Get list of pokemon in location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a pokemon",
+			callback:    commandCatch,
 		},
 	}
 }

@@ -3,16 +3,17 @@ package pokeapi
 import (
 	"encoding/json"
 	"errors"
-	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
 	"io"
 	"net/http"
+
+	pokecache "github.com/Kristian-Roopnarine/pokemoncli/internal/pokecache"
 )
 
 const RootUrl = "https://pokeapi.co/api/v2"
 
 type PokeApiResponse interface {
 	LocationResponse |
-		LocationAreaResponse
+		LocationAreaResponse | PokemonResponse
 }
 
 func Get[T PokeApiResponse](url string, cache pokecache.Cache) (T, error) {
